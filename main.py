@@ -1,7 +1,7 @@
 import pygame
 from script.classes import *
 
-
+#ok 
 
 def init() :
     """Cette procédure est celle qui sera appelée en premier, elle va initialiser certaines variables globales
