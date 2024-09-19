@@ -32,6 +32,16 @@ class Vector2 :
             return (self.x + autre[0], self.y + autre[1])
         elif isinstance(autre, (int, float)) :
             return Vector2(self.x + autre, self.y + autre)
+        
+
+
+    def __sub__(self, autre):
+        if isinstance(autre, Vector2):
+            return Vector2(self.x - autre.x, self.y - autre.y)
+        elif isinstance(autre, tuple):
+            return (self.x - autre[0], self.y - autre[1])
+        elif isinstance(autre, (int, float)):
+            return Vector2(self.x - autre, self.y - autre)
 
     def __mul__(self, autre) :
         if isinstance(autre, (int, float)) :
@@ -66,7 +76,7 @@ class Map :
     et également les monstres. Cela nous permettra de faire un parcours par compréhension de chacune des listes
     et d'agir en fonction de leur besoin. Par exemple faire fonctionner l'intelligence artificielle des monstres pour liste monstre"""
     def __init__ (self, path, chunk_size:int=16) :
-        
+        self.chunk_size = chunk_size
         self.liste_col = []
         with open(path, 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -89,6 +99,23 @@ class Map :
     def bouge_tout(self, vecteur:Vector2) :
         for col in self.liste_col :
             col.position += vecteur
+    
+    def pos_theorique(self,pos):
+        pos_theo = pos.position - map.liste_col[0].position
+
+        return pos_theo
+    
+    def pos_matrice(self,pos_th):
+        pos_x= int(pos_th.x // map.chunk_size)
+        pos_y= int(pos_th.y // map.chunk_size)
+
+        return pos_x,pos_y
+    
+
+    def nb_collision(self,pos_mat):
+        """Renvoie un tuple des collision adjacentes a l'objet (H,D,B,G)"""
+        pass
+
 
     #def dic_to_obj(list, TYPE) :
      #   SPRITE = 0
