@@ -1,0 +1,3 @@
+Recup coo perso 
+Transfo perso sur matrice
+Regarder les 4 collisions 
