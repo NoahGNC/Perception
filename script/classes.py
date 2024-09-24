@@ -78,11 +78,13 @@ class Map :
     def __init__ (self, path, chunk_size:int=16) :
         self.chunk_size = chunk_size
         self.liste_col = []
+        self.real_col = []
         with open(path, 'r', encoding='utf-8') as f:
             data = json.load(f)
 
             #self.liste_sprite_affiche = data["sprites"]
             matrice = data["haut"]
+            self.matrice = matrice
             #self.liste_interactable = []
             #self.liste_monstres = []
         for i in range(len(matrice)) :
@@ -95,26 +97,48 @@ class Map :
     def draw(self, screen) :
         for col in self.liste_col :
             col.draw(screen)
+        for col in self.real_col :
+            col.draw(screen)
 
     def bouge_tout(self, vecteur:Vector2) :
         for col in self.liste_col :
             col.position += vecteur
     
     def pos_theorique(self,pos):
-        pos_theo = pos.position - map.liste_col[0].position
+        pos_theo = pos - self.liste_col[0].position
 
         return pos_theo
     
-    def pos_matrice(self,pos_th):
-        pos_x= int(pos_th.x // map.chunk_size)
-        pos_y= int(pos_th.y // map.chunk_size)
+    def pos_matrice(self,pos):
+        pos_th = self.pos_theorique(pos)
+        pos_x= int(pos_th.x // self.chunk_size)
+        pos_y= int(pos_th.y // self.chunk_size)
 
         return pos_x,pos_y
     
 
-    def nb_collision(self,pos_mat):
+    def collision_autour_tuple(self, pos):
         """Renvoie un tuple des collision adjacentes a l'objet (H,D,B,G)"""
-        pass
+        pos_mat = self.pos_matrice(pos)
+        x = pos_mat[0]
+        y = pos_mat[1]
+        tab = [(x-1, y-1), (x, y-1), (x+1, y-1), (x-1, y), (x+1, y), (x-1, y+1), (x, y+1), (x+1, y+1)] # Les 8 coordonnes autour de l'objet
+        garde = []
+
+        for c in tab :
+            if self.matrice[c[1]][c[0]] == 1 :
+                garde.append(c)
+
+        return garde
+    
+    def collision(self, pos) :
+        """Active les collisions seulement autour du personnage"""
+        autour = self.collision_autour_tuple(pos)
+        self.real_col = []
+        for c in autour :
+            x = (c[0])*self.chunk_size+self.liste_col[0].position.x
+            y = c[1]*self.chunk_size+self.liste_col[0].position.y
+            self.real_col.append(Transform("sprites/shrek.png", Vector2(x, y), Vector2(self.chunk_size, self.chunk_size)))
 
 
     #def dic_to_obj(list, TYPE) :
@@ -131,7 +155,7 @@ class Transform :
     """La classe transform est une classe permettant d'initialiser un objet
     avec comme attribut son visuel, sa position, sa taille et si il a une collision"""
 
-    def __init__(self, sprite:str="sprites/collision.png", position=Vector2(), taille=Vector2(), collision=False, temps_apparition=None) :
+    def __init__(self, sprite:str="sprites/collision.png", position=Vector2(), taille=Vector2(), temps_apparition=None) :
         self.position = position
         self.temps_apparition = temps_apparition  # Si on veut que l'objet disparaisse après un certains nombre de frame.
         
@@ -169,7 +193,35 @@ class Transform :
         self.sprite = pygame.image.load(nouveau_sprite).convert_alpha()
         self.sprite = pygame.transform.scale(self.sprite, (self.taille.x, self.taille.y))
 
+    def get_centre(self) :
+        """Le repère orthonormé étant en haut à gauche, on veut parfois récupérer le centre notamment pour le système de collision"""
+        return Vector2(self.position.x + self.taille.x // 2, self.position.y + self.taille.y // 2) 
+
+
+    def detecte_collision(self, autre_objet):
+        x1, y1 = self.position.to_tuple()
+        l1, h1 = self.taille.to_tuple()
+        x2, y2 = autre_objet.position.to_tuple()
+        l2, h2 = autre_objet.taille.to_tuple()
+
+        collision_x = (x1 < x2 + l2) and (x1 + l1 > x2)
+        collision_y = (y1 < y2 + h2) and (y1 + h1 > y2)
+
+        sens = Vector2(0, 0)
+        if collision_x and collision_y:
+            collision_gauche = abs(x1 + l1 - x2)
+            collision_droite = abs(x1 - (x2 + l2))
+            collision_haut = abs(y1 + h1 - y2)
+            collision_bas = abs(y1 - (y2 + h2))
+
+            min_collision = min(collision_gauche, collision_droite, collision_haut, collision_bas)
+
+            sens.x = -(min_collision == collision_gauche or min_collision == collision_droite)
+            sens.y = -(min_collision == collision_bas or min_collision == collision_haut)
+
+        return sens
 
 def normalize(pos0, pos1) :
     """Retourne le veteur normalistée avec x et y compris entre -1 et 1"""
     return Vector2(pos1.x - pos0.x, pos1.y - pos0.y) / Vector2.distance(pos0, pos1)
+

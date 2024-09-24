@@ -18,6 +18,7 @@ def init() :
 
     perso = Transform("sprites/perso.png", position=Vector2(w/2, h/2), taille=Vector2(64, 64))
     map = Map("data/map0.json", 64)
+    print(map.liste_col[0].position)
     process()
 
 def process() :
@@ -59,15 +60,23 @@ def update() :
     #Dessine carte et perso
     perso.draw(screen)
     map.draw(screen)
+
+    # Détection collision
+    map.collision(perso.get_centre())
+    sens_collision = Vector2(0, 0)
+    for col in map.real_col :
+        actuel = perso.detecte_collision(col)
+        sens_collision.x = actuel.x if actuel.x != 0 else sens_collision.x
+        sens_collision.y = actuel.y if actuel.y != 0 else sens_collision.y
     
 
-    #Calcul pos perso dans matrice 
-    pos_perso = perso.position - map.liste_col[0].position
-    pos_x= int(pos_perso.x // map.chunk_size)
-    pos_y= int(pos_perso.y // map.chunk_size)
-    posi_mat=font.render(f'({pos_x}, {pos_y})', 1, pygame.Color("aqua"))
-    screen.blit(posi_mat,(10,20))
+    map.bouge_tout(mouvement * sens_collision)
     
+    
+    #Calcul pos perso dans matrice 
+    pos_perso = map.pos_matrice(perso.get_centre())
+    posi_mat=font.render(f'({pos_perso[0]}, {pos_perso[1]})', 1, pygame.Color("aqua"))
+    screen.blit(posi_mat,(10,20))
     
     
     screen.blit(update_fps(), (10,0)) 
