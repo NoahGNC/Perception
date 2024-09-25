@@ -16,7 +16,7 @@ def init() :
     screen = pygame.display.set_mode((1280, 720), pygame.FULLSCREEN)
     w, h = pygame.display.get_surface().get_size()
 
-    perso = Transform("sprites/perso.png", position=Vector2(w/2, h/2), taille=Vector2(64, 64))
+    perso = Transform("sprites/perso.png", position=Vector2(w/2, h/2), taille=Vector2(64, 84))
     map = Map("data/map0.json", 64)
     print(map.liste_col[0].position)
     process()
@@ -68,8 +68,6 @@ def update() :
         actuel = perso.detecte_collision(col)
         sens_collision.x = actuel.x if actuel.x != 0 else sens_collision.x
         sens_collision.y = actuel.y if actuel.y != 0 else sens_collision.y
-    
-
     map.bouge_tout(mouvement * sens_collision)
     
     
