@@ -21,6 +21,7 @@ class Vector2 :
     def normalized(self) : 
         """Va normaliser ce vecteur avec le vecteur nul"""
         self = normalize(Vector2.ZERO(), self)
+        
         return self
 
     def __add__(self, autre) :
