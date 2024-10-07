@@ -4,7 +4,7 @@ from script.classes import *
 def init():
     """Cette procédure est celle qui sera appelée en premier, elle va initialiser certaines variables globales
     et lancer le processus de pygame"""
-    global clock, perso, screen, font, map, top_view, is_jumping, gravity_active
+    global clock, perso, screen, font, map, top_view, is_touching_grass, gravity
     pygame.init()
 
     clock = pygame.time.Clock()
@@ -17,17 +17,15 @@ def init():
     perso = Transform("sprites/perso.png", position=Vector2(w/2, h/2), taille=Vector2(64, 84))
     map = Map("data/map0.json", 64)
 
-    perso.gravity = 0.5
+    gravity = 0.5
     perso.speed_y = 0  
-    is_jumping = False
+    is_touching_grass = False
     top_view = True
-    gravity_active = False  
 
-    print(map.liste_col[0].position)
     process()
 
 def process():
-    global clavier, clock, top_view, is_jumping, gravity_active
+    global clavier, clock, top_view, is_touching_grass, map
     clavier = {}
     running = True
     while running:
@@ -43,11 +41,13 @@ def process():
 
                 if event.key == pygame.K_v:
                     top_view = not top_view
-                    gravity_active = not gravity_active  
+                    map.change_map(1) if  map.actual_map == 0 else map.change_map(0)
                 
-                if event.key == pygame.K_SPACE and not top_view and not is_jumping:
-                    perso.speed_y = -10
-                    is_jumping = True
+                if event.key == pygame.K_SPACE :
+                    if not top_view and is_touching_grass:
+                        perso.speed_y = -10
+                        is_touching_grass = False
+
 
             elif event.type == pygame.KEYUP:
                 clavier[event.key] = False
@@ -59,11 +59,11 @@ def process():
     pygame.quit()
 
 def update():
-    global is_jumping
+    global is_touching_grass
     screen.fill((0, 0, 0))
 
     if top_view:
-        mouvement = Vector2(clavier.get(pygame.K_q, 0) + clavier.get(pygame.K_d, 0) * -1, clavier.get(pygame.K_z, 0) + clavier.get(pygame.K_s, 0) * -1).normalized()
+        mouvement = Vector2(clavier.get(pygame.K_q, 0) + clavier.get(pygame.K_d, 0) * -1, clavier.get(pygame.K_z, 0) + clavier.get(pygame.K_s, 0) * -1).normalized() * 10
         
         map.bouge_tout(mouvement)
         map.collision(perso.get_centre())
@@ -77,41 +77,32 @@ def update():
         map.bouge_tout(mouvement * sens_collision)
 
     else:
-        if is_jumping:
-            perso.position.y += perso.speed_y
-            perso.speed_y += perso.gravity  
-        
-       
-        if gravity_active:
-            perso.position.y += perso.speed_y
-            perso.speed_y += perso.gravity  
-        else:
-            
-            perso.speed_y = 0  
+        if not is_touching_grass :
+            perso.speed_y += gravity
+        else :
+            perso.speed_y = 0.1 # Je t'explique en cours gab
 
+        perso.position.y += perso.speed_y
+        
+        
         mouvement = Vector2(clavier.get(pygame.K_q, 0) + clavier.get(pygame.K_d, 0) * -1, 0)
 
         map.bouge_tout(mouvement)
-        map.collision(perso.get_centre())
-        
+        map.collision(perso.get_centre()) # Actualise les colllisions autour
+
         sens_collision = Vector2(0, 0)
         for col in map.real_col:
             actuel = perso.detecte_collision(col)
             sens_collision.x = actuel.x if actuel.x != 0 else sens_collision.x
             sens_collision.y = actuel.y if actuel.y != 0 else sens_collision.y
 
-        if sens_collision.x != 0:
-            perso.position.x -= mouvement.x 
-            
-        if sens_collision.y != 0:
-            perso.speed_y = 0
-            is_jumping = False
-            if sens_collision.y < 0:
-                perso.position.y = col.position.y - perso.taille.y  # sol
-            elif sens_collision.y > 0:
-                perso.position.y = col.position.y + col.taille.y  # plafond
+        is_touching_grass = sens_collision.y == -1 # Là si le joueur à une contrainte -1 sur y c que il touche le sol
 
-      
+        perso.position.y += perso.speed_y *  sens_collision.y 
+
+
+        map.bouge_tout(Vector2(mouvement.x * sens_collision.x, 0)) 
+
 
     perso.draw(screen)
     map.draw(screen)

@@ -76,37 +76,55 @@ class Map :
     Par exemple les collisions, les sprites affichés, les objets avec lesquelles on peut intéragir (porte, enigme etc...)
     et également les monstres. Cela nous permettra de faire un parcours par compréhension de chacune des listes
     et d'agir en fonction de leur besoin. Par exemple faire fonctionner l'intelligence artificielle des monstres pour liste monstre"""
-    def __init__ (self, path, chunk_size:int=16) :
+    def __init__ (self, path, chunk_size:int=16, num_bande:int=3) :
         self.chunk_size = chunk_size
-        self.liste_col = []
-        self.real_col = []
+        self.matrices = [] # Liste de matrice de 1 et de 0
+        self.liste_col = [] # Liste de liste de collision dont l'index correlle avec self.matrices
+        self.real_col = [] # Juste les collisions autours du perso
+        self.actual_map = 0 # Index de la map actuel, 0 étant celle vu du haut
         with open(path, 'r', encoding='utf-8') as f:
             data = json.load(f)
 
             #self.liste_sprite_affiche = data["sprites"]
-            matrice = data["haut"]
-            self.matrice = matrice
+            self.build_map(data["haut"])
+            self.build_map(data["side"][1])
+    
             #self.liste_interactable = []
             #self.liste_monstres = []
+
+    def build_map(self, matrice) :
+        tab = []
         for i in range(len(matrice)) :
             for j in range(len(matrice[i])) :
                 if matrice[i][j] == 1 :
-                    self.liste_col.append(Transform(position=Vector2(j*chunk_size, i*chunk_size), taille=Vector2(chunk_size, chunk_size)))
+                    tab.append(Transform(position=Vector2(j*self.chunk_size, i*self.chunk_size), taille=Vector2(self.chunk_size, self.chunk_size)))
+        self.liste_col.append(tab)
+        self.matrices.append(matrice)
+
+    def change_map(self, index) :
+        ancienne = self.actual_map
+        self.actual_map = index
+
+        ancienne_ref = self.liste_col[ancienne][0] # On obtient la collision origine
+        new_ref = self.liste_col[index][0]
+
+        self.bouge_tout(ancienne_ref.position - new_ref.position)
+
 
         
 
     def draw(self, screen) :
-        for col in self.liste_col :
+        for col in self.liste_col[self.actual_map] :
             col.draw(screen)
         for col in self.real_col :
             col.draw(screen)
 
     def bouge_tout(self, vecteur:Vector2) :
-        for col in self.liste_col :
+        for col in self.liste_col[self.actual_map] :
             col.position += vecteur
     
     def pos_theorique(self,pos):
-        pos_theo = pos - self.liste_col[0].position
+        pos_theo = pos - self.liste_col[self.actual_map][0].position
 
         return pos_theo
     
@@ -127,7 +145,7 @@ class Map :
         garde = []
 
         for c in tab :
-            if self.matrice[c[1]][c[0]] == 1 :
+            if self.matrices[self.actual_map][c[1]][c[0]] == 1 :
                 garde.append(c)
 
         return garde
@@ -137,8 +155,8 @@ class Map :
         autour = self.collision_autour_tuple(pos)
         self.real_col = []
         for c in autour :
-            x = (c[0])*self.chunk_size+self.liste_col[0].position.x
-            y = c[1]*self.chunk_size+self.liste_col[0].position.y
+            x = (c[0])*self.chunk_size+self.liste_col[self.actual_map][0].position.x
+            y = c[1]*self.chunk_size+self.liste_col[self.actual_map][0].position.y
             self.real_col.append(Transform("sprites/shrek.png", Vector2(x, y), Vector2(self.chunk_size, self.chunk_size)))
 
 

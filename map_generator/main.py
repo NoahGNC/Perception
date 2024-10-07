@@ -20,7 +20,6 @@ with Image.open("map.png") as img :
         mat_ligne = []
         for x in range(width):
             gris = img.getpixel((x,y))
-            print(gris)
 
             if gris > 0 : # Le pixel est plutôt blanc
                 mat_ligne.append(0)
