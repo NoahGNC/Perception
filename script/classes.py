@@ -68,7 +68,9 @@ class Vector2 :
         """Retourne la distance entre deux point Vector2"""
         return sqrt((pos0.x - pos1.x) ** 2 + (pos0.y - pos1.y) ** 2)
     
-
+    def crea_vect(p1,p2):
+        """Renvoie un vecteur a partir de deux points"""
+        return Vector2(p2.x-p1.x,p2.y-p1.y)
 
 
 class Map :
@@ -174,10 +176,10 @@ class Transform :
     """La classe transform est une classe permettant d'initialiser un objet
     avec comme attribut son visuel, sa position, sa taille et si il a une collision"""
 
-    def __init__(self, sprite:str="sprites/collision.png", position=Vector2(), taille=Vector2(), temps_apparition=None) :
+    def __init__(self, sprite:str="sprites/collision.png", position=Vector2(), taille=Vector2(), temps_apparition=None, direction=None) :
         self.position = position
         self.temps_apparition = temps_apparition  # Si on veut que l'objet disparaisse après un certains nombre de frame.
-        
+        self.direction = direction if direction is not None else Vector2(0, 0)
         if sprite != None :
             self.sprite = pygame.image.load(sprite).convert_alpha()  # On charge le sprite de l'objet dans la ram
 
@@ -215,6 +217,10 @@ class Transform :
     def get_centre(self) :
         """Le repère orthonormé étant en haut à gauche, on veut parfois récupérer le centre notamment pour le système de collision"""
         return Vector2(self.position.x + self.taille.x // 2, self.position.y + self.taille.y // 2) 
+    
+    def centrer(self,position:Vector2) : 
+        """"""
+        self.position = Vector2(position.x - self.taille.x /2 , position.y - self.taille.y/2)
 
 
     def detecte_collision(self, autre_objet):
@@ -239,6 +245,7 @@ class Transform :
             sens.y = -(min_collision == collision_bas or min_collision == collision_haut)
 
         return sens
+    
 
 def normalize(pos0, pos1) :
     """Retourne le veteur normalistée avec x et y compris entre -1 et 1"""

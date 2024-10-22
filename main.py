@@ -4,7 +4,7 @@ from script.classes import *
 def init():
     """Cette procédure est celle qui sera appelée en premier, elle va initialiser certaines variables globales
     et lancer le processus de pygame"""
-    global clock, perso, screen, font, map, top_view, is_touching_grass, gravity
+    global clock, perso, screen, font, map, top_view, is_touching_grass, gravity , projectiles
     pygame.init()
 
     clock = pygame.time.Clock()
@@ -21,11 +21,13 @@ def init():
     perso.speed_y = 0  
     is_touching_grass = False
     top_view = True
+    projectiles=[]
+    
 
     process()
 
 def process():
-    global clavier, clock, top_view, is_touching_grass, map
+    global clavier, clock, top_view, is_touching_grass, map,projectiles
     clavier = {}
     running = True
     while running:
@@ -33,6 +35,7 @@ def process():
         clock.tick(60)
 
         for event in pygame.event.get():
+
             if event.type == pygame.QUIT:
                 running = False
 
@@ -55,12 +58,39 @@ def process():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
+            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                M_posX,M_posY = pygame.mouse.get_pos() 
+                M_pos=Vector2(M_posX,M_posY)
+                MP_Vect=Vector2.crea_vect(perso.get_centre(),M_pos).normalized()
+                Proj=Transform("sprites/projectile.png",taille=Vector2(25,25),temps_apparition=180)
+                Proj.centrer(perso.get_centre())
+                Proj.direction = MP_Vect
+                
+                projectiles.append(Proj)
+
 
     pygame.quit()
 
 def update():
+
+    
     global is_touching_grass
     screen.fill((0, 0, 0))
+
+    for projectile in projectiles[:]:
+        projectile.position += projectile.direction * 10  
+        
+        
+        if projectile.temps_apparition <= 0:
+            projectiles.remove(projectile)  
+        else:
+            projectile.draw(screen)
+   
+   
+
+
+
 
     if top_view:
         mouvement = Vector2(clavier.get(pygame.K_q, 0) + clavier.get(pygame.K_d, 0) * -1, clavier.get(pygame.K_z, 0) + clavier.get(pygame.K_s, 0) * -1).normalized() * 10
@@ -80,7 +110,7 @@ def update():
         if not is_touching_grass :
             perso.speed_y += gravity
         else :
-            perso.speed_y = 0.1 # Je t'explique en cours gab
+            perso.speed_y = 0.1 
 
         perso.position.y += perso.speed_y
         
