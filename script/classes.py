@@ -145,7 +145,11 @@ class Map :
         pos_y= int(pos_th.y // self.chunk_size)
 
         return pos_x,pos_y
-    
+    def quel_bande(self,pos_theorique):
+        matrice_actuelle = self.matrices[self.actual_map]
+        num_bande =  pos_theorique.x // (len(matrice_actuelle)//3)
+
+        return num_bande
 
     def collision_autour_tuple(self, pos):
         """Renvoie un tuple des collision adjacentes a l'objet (H,D,B,G)"""
