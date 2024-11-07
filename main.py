@@ -4,7 +4,7 @@ from script.classes import *
 def init():
     """Cette procédure est celle qui sera appelée en premier, elle va initialiser certaines variables globales
     et lancer le processus de pygame"""
-    global clock, perso, screen, font, map, top_view, is_touching_grass, gravity , projectiles
+    global clock, perso, screen, font, map, top_view, is_touching_grass, gravity , projectiles, w, h
     pygame.init()
 
     clock = pygame.time.Clock()
@@ -27,7 +27,7 @@ def init():
     process()
 
 def process():
-    global clavier, clock, top_view, is_touching_grass, map,projectiles
+    global clavier, clock, top_view, is_touching_grass, map,projectilesv
     clavier = {}
     running = True
     while running:
@@ -45,6 +45,7 @@ def process():
                 if event.key == pygame.K_v:
                     top_view = not top_view
                     map.change_map(1) if  map.actual_map == 0 else map.change_map(0)
+                    perso.centrer(Vector2(w / 2, h / 2))
                 
                 if event.key == pygame.K_SPACE :
                     if not top_view and is_touching_grass:
@@ -81,7 +82,6 @@ def update():
     for projectile in projectiles[:]:
         projectile.position += projectile.direction * 10  
         
-        
         if projectile.temps_apparition <= 0:
             projectiles.remove(projectile)  
         else:
@@ -106,6 +106,9 @@ def update():
         
         map.bouge_tout(mouvement * sens_collision)
 
+        ss = font.render(f'{sens_collision}', 1, pygame.Color("aqua"))
+        screen.blit(ss, (10, 40))
+
     else:
         if not is_touching_grass :
             perso.speed_y += gravity
@@ -115,7 +118,7 @@ def update():
         perso.position.y += perso.speed_y
         
         
-        mouvement = Vector2(clavier.get(pygame.K_q, 0) + clavier.get(pygame.K_d, 0) * -1, 0)
+        mouvement = Vector2(clavier.get(pygame.K_q, 0) + clavier.get(pygame.K_d, 0) * -1, 0) * 10
 
         map.bouge_tout(mouvement)
         map.collision(perso.get_centre()) # Actualise les colllisions autour
@@ -140,6 +143,8 @@ def update():
     pos_perso = map.pos_matrice(perso.get_centre())
     posi_mat = font.render(f'({pos_perso[0]}, {pos_perso[1]})', 1, pygame.Color("aqua"))
     screen.blit(posi_mat, (10, 20))
+
+
 
     screen.blit(update_fps(), (10, 0))
     pygame.display.flip()

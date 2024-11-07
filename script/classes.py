@@ -84,23 +84,28 @@ class Map :
         self.liste_col = [] # Liste de liste de collision dont l'index correlle avec self.matrices
         self.real_col = [] # Juste les collisions autours du perso
         self.actual_map = 0 # Index de la map actuel, 0 étant celle vu du haut
+        self.only_visuals = []
         with open(path, 'r', encoding='utf-8') as f:
             data = json.load(f)
 
             #self.liste_sprite_affiche = data["sprites"]
-            self.build_map(data["haut"])
-            self.build_map(data["side"][1])
+            self.build_map(data["top"], "top")
+            self.build_map(data["side"][1], "side")
     
             #self.liste_interactable = []
             #self.liste_monstres = []
 
-    def build_map(self, matrice) :
+    def build_map(self, matrice, sprite_set:str) :
         tab = []
+        cosmetic = []
         for i in range(len(matrice)) :
             for j in range(len(matrice[i])) :
-                if matrice[i][j] == 1 :
-                    tab.append(Transform(position=Vector2(j*self.chunk_size, i*self.chunk_size), taille=Vector2(self.chunk_size, self.chunk_size)))
+                if matrice[i][j] >= 5 :
+                    tab.append(Transform(sprite="sprites/" + sprite_set + "/" + str(matrice[i][j]) + ".png", position=Vector2(j*self.chunk_size, i*self.chunk_size), taille=Vector2(self.chunk_size, self.chunk_size)))
+                else :
+                    cosmetic.append(Transform(sprite="sprites/" + sprite_set + "/" + str(matrice[i][j]) + ".png", position=Vector2(j*self.chunk_size, i*self.chunk_size), taille=Vector2(self.chunk_size, self.chunk_size)))
         self.liste_col.append(tab)
+        self.only_visuals.append(cosmetic)
         self.matrices.append(matrice)
 
     def change_map(self, index) :
@@ -110,7 +115,7 @@ class Map :
         ancienne_ref = self.liste_col[ancienne][0] # On obtient la collision origine
         new_ref = self.liste_col[index][0]
 
-        self.bouge_tout(ancienne_ref.position - new_ref.position)
+        self.bouge_tout(Vector2(ancienne_ref.position.x - new_ref.position.x, 0))
 
 
         
@@ -120,10 +125,14 @@ class Map :
             col.draw(screen)
         for col in self.real_col :
             col.draw(screen)
+        for obj in self.only_visuals[self.actual_map] :
+            obj.draw(screen)
 
     def bouge_tout(self, vecteur:Vector2) :
         for col in self.liste_col[self.actual_map] :
             col.position += vecteur
+        for obj in self.only_visuals[self.actual_map] :
+            obj.position += vecteur
     
     def pos_theorique(self,pos):
         pos_theo = pos - self.liste_col[self.actual_map][0].position
