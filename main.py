@@ -1,11 +1,12 @@
+#Noah
 import pygame
 from script.classes import *
 
 def init():
     """Cette procédure est celle qui sera appelée en premier, elle va initialiser certaines variables globales
     et lancer le processus de pygame"""
-    global clock, perso, screen, font, map, top_view, is_touching_grass, gravity , projectiles
-    pygame.init()
+    global clock, perso, screen, font, map, top_view, is_touching_grass, gravity , projectiles, w, h
+    pygame.init() 
 
     clock = pygame.time.Clock()
     font = pygame.font.SysFont("Arial", 18)
@@ -14,7 +15,8 @@ def init():
     screen = pygame.display.set_mode((1280, 720), pygame.FULLSCREEN)
     w, h = pygame.display.get_surface().get_size()
 
-    perso = Transform("sprites/perso.png", position=Vector2(w/2, h/2), taille=Vector2(64, 84))
+    perso = Transform("sprites/perso.png", position=Vector2(w/2, h/2), taille=Vector2(64, 64))
+    perso.centrer(Vector2(w / 2, h / 2))
     map = Map("data/map0.json", 64)
 
     gravity = 0.5
@@ -22,12 +24,13 @@ def init():
     is_touching_grass = False
     top_view = True
     projectiles=[]
-    
+
+
 
     process()
 
 def process():
-    global clavier, clock, top_view, is_touching_grass, map,projectiles
+    global clavier, clock, top_view, is_touching_grass, map,projectiles,w,h
     clavier = {}
     running = True
     while running:
@@ -44,7 +47,10 @@ def process():
 
                 if event.key == pygame.K_v:
                     top_view = not top_view
-                    map.change_map(1) if  map.actual_map == 0 else map.change_map(0)
+                    map.change_map(map.quel_bande(map.pos_matrice(perso.position))+1) if  map.actual_map == 0 else map.change_map(0)
+                    print(map.quel_bande(map.pos_matrice(perso.position)))
+                    perso.centrer(Vector2(w / 2, h / 2))
+                  
                     
                 
                 if event.key == pygame.K_SPACE :
@@ -80,22 +86,7 @@ def update():
     global is_touching_grass
     screen.fill((0, 0, 0))
 
-    for projectile in projectiles[:]:
-        if top_view:
-            projectile.position += projectile.direction * 10  
-        else:
-            projectile.speed_y += gravity
-            projectile.position.x += projectile.direction.x * 10
-            
-            projectile.position.y += projectile.direction.y * 10 + projectile.speed_y
-            print("Avengers")
-            
-        
-        
-        if projectile.temps_apparition <= 0:
-            projectiles.remove(projectile)  
-        else:
-            projectile.draw(screen)
+
    
    
 
@@ -125,7 +116,7 @@ def update():
         perso.position.y += perso.speed_y
         
         
-        mouvement = Vector2(clavier.get(pygame.K_q, 0) + clavier.get(pygame.K_d, 0) * -1, 0)
+        mouvement = Vector2(clavier.get(pygame.K_q, 0) + clavier.get(pygame.K_d, 0) * -1, 0) * 10
 
         map.bouge_tout(mouvement)
         map.collision(perso.get_centre()) # Actualise les colllisions autour
@@ -144,13 +135,29 @@ def update():
         map.bouge_tout(Vector2(mouvement.x * sens_collision.x, 0)) 
 
 
-    perso.draw(screen)
+    
     map.draw(screen)
+    perso.draw(screen)
+
+    for projectile in projectiles[:]:
+        if top_view:
+            projectile.position += projectile.direction * 20  
+        else:
+            projectile.speed_y += gravity
+            projectile.position.x += projectile.direction.x * 20
+            
+            projectile.position.y += projectile.direction.y * 20 + projectile.speed_y
+        
+        
+        if projectile.temps_apparition <= 0:
+            projectiles.remove(projectile)  
+        else:
+            projectile.draw(screen)
 
     pos_perso = map.pos_matrice(perso.get_centre())
     posi_mat = font.render(f'({pos_perso[0]}, {pos_perso[1]})', 1, pygame.Color("aqua"))
     screen.blit(posi_mat, (10, 20))
-
+    
     screen.blit(update_fps(), (10, 0))
     pygame.display.flip()
 

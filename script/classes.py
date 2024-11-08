@@ -90,7 +90,9 @@ class Map :
 
             #self.liste_sprite_affiche = data["sprites"]
             self.build_map(data["top"], "top")
+            self.build_map(data["side"][0], "side")
             self.build_map(data["side"][1], "side")
+            self.build_map(data["side"][2], "side")
     
             #self.liste_interactable = []
             #self.liste_monstres = []
@@ -145,11 +147,19 @@ class Map :
         pos_y= int(pos_th.y // self.chunk_size)
 
         return pos_x,pos_y
-    def quel_bande(self,pos_theorique):
+    
+    def quel_bande(self,pos_matrice):
         matrice_actuelle = self.matrices[self.actual_map]
-        num_bande =  pos_theorique.x // (len(matrice_actuelle)//3)
+        num_bande =  pos_matrice[1] // (len(matrice_actuelle)//3)
 
         return num_bande
+    
+    def est_dans_matrice(self, pos) :
+        mat = self.pos_matrice(pos)
+        tiles_height = self.matrices[self.actual_map]
+        tiles_width = self.matrices[self.actual_map][0]
+        return 0 < mat.x < tiles_width and 0 < mat.y < tiles_height
+
 
     def collision_autour_tuple(self, pos):
         """Renvoie un tuple des collision adjacentes a l'objet (H,D,B,G)"""
@@ -160,7 +170,7 @@ class Map :
         garde = []
 
         for c in tab :
-            if self.matrices[self.actual_map][c[1]][c[0]] == 1 :
+            if self.matrices[self.actual_map][c[1]][c[0]] >= 5 :
                 garde.append(c)
 
         return garde
