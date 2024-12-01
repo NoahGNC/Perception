@@ -19,12 +19,15 @@ with Image.open("map.png") as img :
     for y in range(height):
         mat_ligne = []
         for x in range(width):
-            gris = img.getpixel((x,y))
+            rgb = img.getpixel((x,y))
+            print(rgb)
 
-            if gris > 0 : # Le pixel est plutôt blanc
+            if rgb == (255, 255, 255, 255) : # Le pixel est plutôt blanc
                 mat_ligne.append(0)
-            else :
-                mat_ligne.append(1)
+            elif rgb == (0, 0, 0, 255) :
+                mat_ligne.append(5)
+            elif rgb == (0, 0, 255, 255) :
+                mat_ligne.append(6)
         matrice.append(mat_ligne)
 
     fichier_json = json.dumps(matrice, indent=0, cls=CustomJSONEncoder)

@@ -156,9 +156,9 @@ class Map :
     
     def est_dans_matrice(self, pos) :
         mat = self.pos_matrice(pos)
-        tiles_height = self.matrices[self.actual_map]
-        tiles_width = self.matrices[self.actual_map][0]
-        return 0 < mat.x < tiles_width and 0 < mat.y < tiles_height
+        tiles_height = len(self.matrices[self.actual_map])
+        tiles_width = len(self.matrices[self.actual_map][0])
+        return 0 < mat[0] < tiles_width and 0 < mat[1] < tiles_height
 
 
     def collision_autour_tuple(self, pos):
