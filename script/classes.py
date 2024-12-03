@@ -78,13 +78,14 @@ class Map :
     Par exemple les collisions, les sprites affichés, les objets avec lesquelles on peut intéragir (porte, enigme etc...)
     et également les monstres. Cela nous permettra de faire un parcours par compréhension de chacune des listes
     et d'agir en fonction de leur besoin. Par exemple faire fonctionner l'intelligence artificielle des monstres pour liste monstre"""
-    def __init__ (self, path, chunk_size:int=16, num_bande:int=3) :
+    def __init__ (self, path, chunk_size:int=16, num_bande:int=4) :
         self.chunk_size = chunk_size
         self.matrices = [] # Liste de matrice de 1 et de 0
         self.liste_col = [] # Liste de liste de collision dont l'index correlle avec self.matrices
         self.real_col = [] # Juste les collisions autours du perso
         self.actual_map = 0 # Index de la map actuel, 0 étant celle vu du haut
         self.only_visuals = []
+        self.num_bande = num_bande
         with open(path, 'r', encoding='utf-8') as f:
             data = json.load(f)
 
@@ -93,6 +94,9 @@ class Map :
             self.build_map(data["side"][0], "side")
             self.build_map(data["side"][1], "side")
             self.build_map(data["side"][2], "side")
+            self.build_map(data["side"][3], "side")
+            
+            
     
             #self.liste_interactable = []
             #self.liste_monstres = []
@@ -102,8 +106,10 @@ class Map :
         cosmetic = []
         for i in range(len(matrice)) :
             for j in range(len(matrice[i])) :
-                if matrice[i][j] >= 5 :
+                if matrice[i][j] >= 4:
+                    
                     tab.append(Transform(sprite="sprites/" + sprite_set + "/" + str(matrice[i][j]) + ".png", position=Vector2(j*self.chunk_size, i*self.chunk_size), taille=Vector2(self.chunk_size, self.chunk_size)))
+                    
                 else :
                     cosmetic.append(Transform(sprite="sprites/" + sprite_set + "/" + str(matrice[i][j]) + ".png", position=Vector2(j*self.chunk_size, i*self.chunk_size), taille=Vector2(self.chunk_size, self.chunk_size)))
         self.liste_col.append(tab)
@@ -113,9 +119,12 @@ class Map :
     def change_map(self, index) :
         ancienne = self.actual_map
         self.actual_map = index
-
+        
         ancienne_ref = self.liste_col[ancienne][0] # On obtient la collision origine
+        
+        
         new_ref = self.liste_col[index][0]
+
 
         self.bouge_tout(Vector2(ancienne_ref.position.x - new_ref.position.x, 0))
 
@@ -150,9 +159,9 @@ class Map :
     
     def quel_bande(self,pos_matrice):
         matrice_actuelle = self.matrices[self.actual_map]
-        num_bande =  pos_matrice[1] // (len(matrice_actuelle)//3)
+        numero_bande =  pos_matrice[1] // (len(matrice_actuelle)//self.num_bande)
 
-        return num_bande
+        return numero_bande
     
     def est_dans_matrice(self, pos) :
         mat = self.pos_matrice(pos)
@@ -170,7 +179,7 @@ class Map :
         garde = []
 
         for c in tab :
-            if self.matrices[self.actual_map][c[1]][c[0]] >= 5 :
+            if self.matrices[self.actual_map][c[1]][c[0]] >= 4 :
                 garde.append(c)
 
         return garde

@@ -5,7 +5,7 @@ from script.classes import *
 def init():
     """Cette procédure est celle qui sera appelée en premier, elle va initialiser certaines variables globales
     et lancer le processus de pygame"""
-    global clock, perso, screen, font, map, top_view, is_touching_grass, gravity , projectiles, w, h, is_touching_grass
+    global clock, perso, screen, font, map, top_view, is_touching_grass, gravity , projectiles, w, h
     pygame.init() 
 
     clock = pygame.time.Clock()
@@ -47,6 +47,8 @@ def process():
 
                 if event.key == pygame.K_v:
                     if top_view :
+                        
+                       
                         map.change_map(map.quel_bande(map.pos_matrice(perso.position))+1)
                         perso.centrer(Vector2(w / 2, h / 2))
                         find_ground()
@@ -102,7 +104,7 @@ def find_ground() :
 def update():
     global is_touching_grass
     screen.fill((0, 0, 0))
-    print(map.est_dans_matrice(perso.position))
+    
     if map.est_dans_matrice(perso.position) :
         if top_view:
             mouvement = Vector2(clavier.get(pygame.K_q, 0) + clavier.get(pygame.K_d, 0) * -1, clavier.get(pygame.K_z, 0) + clavier.get(pygame.K_s, 0) * -1).normalized() * 10

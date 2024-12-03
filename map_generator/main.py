@@ -11,7 +11,7 @@ class CustomJSONEncoder(json.JSONEncoder):
 
 
 
-with Image.open("map.png") as img :
+with Image.open("map_niv1__side4.png") as img :
     width, height = img.size
 
     matrice = []
