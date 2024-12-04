@@ -26,6 +26,8 @@ def init():
     projectiles=[]
     is_touching_grass = False
 
+    #game_over = Transform("sprites/gameover.png")
+
 
     process()
 
@@ -105,7 +107,7 @@ def update():
     global is_touching_grass
     screen.fill((0, 0, 0))
     
-    if map.est_dans_matrice(perso.position) :
+    try :
         if top_view:
             mouvement = Vector2(clavier.get(pygame.K_q, 0) + clavier.get(pygame.K_d, 0) * -1, clavier.get(pygame.K_z, 0) + clavier.get(pygame.K_s, 0) * -1).normalized() * 10
             
@@ -167,7 +169,7 @@ def update():
             else:
                 projectile.draw(screen)
 
-    else :
+    except IndexError :
         print("Game Over")
 
     pos_perso = map.pos_matrice(perso.get_centre())

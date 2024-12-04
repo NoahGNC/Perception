@@ -84,6 +84,8 @@ class Map :
         self.liste_col = [] # Liste de liste de collision dont l'index correlle avec self.matrices
         self.real_col = [] # Juste les collisions autours du perso
         self.actual_map = 0 # Index de la map actuel, 0 étant celle vu du haut
+        self.leviers = []
+
         self.only_visuals = []
         self.num_bande = num_bande
         with open(path, 'r', encoding='utf-8') as f:
@@ -115,6 +117,12 @@ class Map :
         self.liste_col.append(tab)
         self.only_visuals.append(cosmetic)
         self.matrices.append(matrice)
+
+    def build_optional(data) :
+        """Pour construire les leviers etc..."""
+        res = []
+        for objet in data :
+             pass
 
     def change_map(self, index) :
         ancienne = self.actual_map
