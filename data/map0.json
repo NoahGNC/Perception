@@ -110,12 +110,12 @@
 
     ],
     "collisions":[
-        {"map":3, "sprite":"sprites/pont.png", "x":0, "y":0, "tx":0, "ty":0},
-        {"map":3, "sprite":"sprites/pont.png", "x":0, "y":0, "tx":0, "ty":0}
+        {"map":0, "actif":0, "sprite":"sprites/pont.png", "x":10, "y":3, "tx":1, "ty":1},
+        {"map":0, "actif":0, "sprite":"sprites/pont.png", "x":10, "y":4, "tx":1, "ty":1}
     ],
 
     "leviers":[
-        {"map":3, "sprite":"sprites/levier.png", "x":41, "y":1, "tx":1, "ty":1, "affect":[0, 1]}
+        {"map":0, "sprite":"sprites/levier0.png", "x":10, "y":2, "tx":1, "ty":1, "affect":[0, 1]}
     ]
 
 }

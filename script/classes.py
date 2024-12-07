@@ -84,7 +84,9 @@ class Map :
         self.liste_col = [] # Liste de liste de collision dont l'index correlle avec self.matrices
         self.real_col = [] # Juste les collisions autours du perso
         self.actual_map = 0 # Index de la map actuel, 0 étant celle vu du haut
+        
         self.leviers = []
+        self.collisions_optionels = []
 
         self.only_visuals = []
         self.num_bande = num_bande
@@ -98,7 +100,8 @@ class Map :
             self.build_map(data["side"][2], "side")
             self.build_map(data["side"][3], "side")
             
-            
+            self.add_leviers(data)
+            self.add_collisions_optionels(data)
     
             #self.liste_interactable = []
             #self.liste_monstres = []
@@ -118,11 +121,28 @@ class Map :
         self.only_visuals.append(cosmetic)
         self.matrices.append(matrice)
 
-    def build_optional(data) :
+    def add_leviers(self, data) :
         """Pour construire les leviers etc..."""
-        res = []
-        for objet in data :
-             pass
+        self.leviers = [[] for _ in range(self.num_bande + 1)]
+        for objet in data["leviers"] :
+            levier = Transform(objet["sprite"], Vector2(objet["x"], objet["y"]) * self.chunk_size,
+                                                        Vector2(objet["tx"], objet["ty"]) * self.chunk_size)
+            levier.actionnement = objet["affect"]
+            levier.actif = False
+            self.leviers[objet["map"]].append(levier)
+
+    def add_collisions_optionels(self, data) :
+            """Pour construire les leviers etc..."""
+            self.collisions_optionels = [[] for _ in range(self.num_bande + 1)]
+            for objet in data["collisions"] :
+                col = Transform(objet["sprite"], Vector2(objet["x"], objet["y"]) * self.chunk_size,
+                                                            Vector2(objet["tx"], objet["ty"]) * self.chunk_size)
+                col.actif = True if objet["actif"] == 1 else 0
+                self.collisions_optionels[objet["map"]].append(col)
+
+            
+        
+
 
     def change_map(self, index) :
         ancienne = self.actual_map
@@ -146,12 +166,22 @@ class Map :
             col.draw(screen)
         for obj in self.only_visuals[self.actual_map] :
             obj.draw(screen)
+        for obj in self.leviers[self.actual_map] :
+            obj.draw(screen)
+        for obj in self.collisions_optionels[self.actual_map] :
+            if obj.actif :
+                obj.draw(screen)
 
     def bouge_tout(self, vecteur:Vector2) :
         for col in self.liste_col[self.actual_map] :
             col.position += vecteur
         for obj in self.only_visuals[self.actual_map] :
             obj.position += vecteur
+        for obj in self.leviers[self.actual_map] :
+            obj.position += vecteur
+        for obj in self.collisions_optionels[self.actual_map] :
+            obj.position += vecteur
+
     
     def pos_theorique(self,pos):
         pos_theo = pos - self.liste_col[self.actual_map][0].position
@@ -173,9 +203,9 @@ class Map :
     
     def est_dans_matrice(self, pos) :
         mat = self.pos_matrice(pos)
-        tiles_height = len(self.matrices[self.actual_map])
-        tiles_width = len(self.matrices[self.actual_map][0])
-        return 0 < mat[0] < tiles_width and 0 < mat[1] < tiles_height
+        tiles_height = len(self.matrices[self.actual_map]) - 1
+        tiles_width = len(self.matrices[self.actual_map][0]) - 1
+        return 1 < mat[0] < tiles_width and 0 < mat[1] < tiles_height
 
 
     def collision_autour_tuple(self, pos):
@@ -184,6 +214,7 @@ class Map :
         x = pos_mat[0]
         y = pos_mat[1]
         tab = [(x-1, y-1), (x, y-1), (x+1, y-1), (x-1, y), (x+1, y), (x-1, y+1), (x, y+1), (x+1, y+1)] # Les 8 coordonnes autour de l'objet
+        #tab = [(x, y-1), (x-1, y), (x+1, y), (x, y+1)] 
         garde = []
 
         for c in tab :
@@ -192,15 +223,27 @@ class Map :
 
         return garde
     
+    def est_dans_col(self, pos:Vector2) :
+        pos_mat = self.pos_matrice(pos)
+        x = pos_mat[0]
+        y = pos_mat[1]
+
+        if self.matrices[self.actual_map][y][x] == 6 or self.matrices[self.actual_map][y][x] == 4 :
+            return True
+        return False
+
+    
     def collision(self, pos) :
         """Active les collisions seulement autour du personnage"""
         autour = self.collision_autour_tuple(pos)
         self.real_col = []
         for c in autour :
-            x = (c[0])*self.chunk_size+self.liste_col[self.actual_map][0].position.x
+            x = c[0]*self.chunk_size+self.liste_col[self.actual_map][0].position.x
             y = c[1]*self.chunk_size+self.liste_col[self.actual_map][0].position.y
             self.real_col.append(Transform("sprites/shrek.png", Vector2(x, y), Vector2(self.chunk_size, self.chunk_size)))
-
+        for c in self.collisions_optionels[self.actual_map] :
+            if c.actif :
+                self.real_col.append(c)
 
     #def dic_to_obj(list, TYPE) :
      #   SPRITE = 0
@@ -261,10 +304,36 @@ class Transform :
     def centrer(self,position:Vector2) : 
         """"""
         self.position = Vector2(position.x - self.taille.x /2 , position.y - self.taille.y/2)
+    
+    def get_points_cardinaux(self) :
+        pos = []
+        pos.append(self.position)
+        pos.append(self.position + self.taille)
+        pos.append(self.position + Vector2(self.taille.x, 0))
+        pos.append(self.position + Vector2(0, self.taille.y))
+        return pos
+
+    def est_dedanddds(self, autre_objet, offset:Vector2=Vector2(0, 0)) -> bool:
+        pos = self.get_centre() + offset
+        return (pos.x >= autre_objet.position.x and
+                pos.y >= autre_objet.position.y and
+                pos.x <= autre_objet.position.x + autre_objet.taille.x and
+                pos.y <= autre_objet.position.y + autre_objet.taille.y)
+    
+    def est_dedans(self, autre_objet, offset:Vector2=Vector2(0, 0)) -> bool:
+        positions = self.get_points_cardinaux()
+        for pos in positions :
+            pos += offset
+            if (pos.x >= autre_objet.position.x and
+                    pos.y >= autre_objet.position.y and
+                    pos.x <= autre_objet.position.x + autre_objet.taille.x and
+                    pos.y <= autre_objet.position.y + autre_objet.taille.y) :
+                return True
+        return False
 
 
-    def detecte_collision(self, autre_objet):
-        x1, y1 = self.position.to_tuple()
+    def detecte_collision(self, autre_objet, offset:Vector2=Vector2(0, 0)):
+        x1, y1 = (self.position + offset).to_tuple()
         l1, h1 = self.taille.to_tuple()
         x2, y2 = autre_objet.position.to_tuple()
         l2, h2 = autre_objet.taille.to_tuple()
@@ -272,7 +341,7 @@ class Transform :
         collision_x = (x1 < x2 + l2) and (x1 + l1 > x2)
         collision_y = (y1 < y2 + h2) and (y1 + h1 > y2)
 
-        sens = Vector2(0, 0)
+        sens = Vector2(1, 1)
         if collision_x and collision_y:
             collision_gauche = abs(x1 + l1 - x2)
             collision_droite = abs(x1 - (x2 + l2))
@@ -281,8 +350,9 @@ class Transform :
 
             min_collision = min(collision_gauche, collision_droite, collision_haut, collision_bas)
 
-            sens.x = -(min_collision == collision_gauche or min_collision == collision_droite)
-            sens.y = -(min_collision == collision_bas or min_collision == collision_haut)
+            sens.x = (min_collision == collision_gauche or min_collision == collision_droite) * 1
+
+            sens.y = (min_collision == collision_bas or min_collision == collision_haut) * 1
 
         return sens
     
