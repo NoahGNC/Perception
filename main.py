@@ -3,7 +3,7 @@ from script.classes import *
 
 def init():
     """Initialisation des variables globales et du processus principal Pygame."""
-    global clock, perso, screen, font, map, top_view, is_touching_grass, gravity, projectiles, w, h
+    global clock, perso, screen, font, map, top_view, is_touching_grass, gravity, projectiles, w, h , last_click, anti_spam , game_over,game_over_im, background_image
     pygame.init()
 
     # Configuration initial
@@ -12,9 +12,16 @@ def init():
     pygame.display.set_caption("Pyracode")
     screen = pygame.display.set_mode((1280, 720), pygame.FULLSCREEN)
     w, h = pygame.display.get_surface().get_size()
+    game_over = False
 
+
+    background_image = pygame.image.load("sprites/ciel")
+    background_image = pygame.transform.scale(background_image, (w, h))
     # Initialisation des objet principal
+
+
     perso = Transform("sprites/perso.png", position=Vector2(w / 2, h / 2), taille=Vector2(64, 64))
+    game_over_im =  Transform( "sprites/game_over.png" ,position=Vector2(0,0), taille=Vector2(1280,720) )
     perso.centrer(Vector2(w / 2, h / 2))
     map = Map("data/map0.json", 64, 4)
 
@@ -24,19 +31,23 @@ def init():
     is_touching_grass = False
     top_view = True
     projectiles = []
+    last_click = 0
+    anti_spam = 1000
 
     process()
 
 
 def process():
     """Boucle principale du jeu."""
-    global clavier, clock, top_view, is_touching_grass, map, projectiles, w, h
+    global clavier, clock, top_view, is_touching_grass, map, projectiles, w, h , last_click , anti_spam , game_over
     clavier = {}
     running = True
 
     while running:
         update()
         clock.tick(60)
+
+           
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -46,8 +57,11 @@ def process():
                 gere_keydown(event.key)  # Gère les touches pressées
             elif event.type == pygame.KEYUP:
                 clavier[event.key] = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                create_projectile()
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                current_time = pygame.time.get_ticks()
+                if current_time - last_click >= anti_spam:
+                    last_click = current_time
+                    create_projectile()
 
     pygame.quit()
 
@@ -67,6 +81,8 @@ def gere_keydown(key):
             is_touching_grass = False
             perso.centrer(Vector2(w / 2, h / 2))
             top_view = True
+        elif game_over:
+            init()
 
     elif key == pygame.K_SPACE:
         if not top_view and is_touching_grass:
@@ -109,9 +125,9 @@ def find_ground():
 
 def update():
     """Met à jour l'état du jeu à chaque frame."""
-    global is_touching_grass
-    screen.fill((0, 0, 0))  # noir
-
+    global is_touching_grass, game_over,game_over_im , background_image
+   
+    screen.blit(background_image, (0, 0))   
     if map.est_dans_matrice(perso.get_centre()) :
         if top_view:
             gere_top_view_movement()
@@ -124,10 +140,17 @@ def update():
         update_projectiles()
 
     else :
-        print("Game Over")
+        
+        game_over=True
+        game_over_im.draw(screen)
+        
+        
 
     display_info()
     pygame.display.flip()
+
+
+
 
 
 def gere_top_view_movement():
@@ -157,7 +180,7 @@ def gere_top_view_movement():
 
 def gere_side_view_movement():
     """Gère les mouvements du personnage en vue de côté."""
-    global is_touching_grass
+    global is_touching_grass , mouvement
 
     mouvement = Vector2(
         clavier.get(pygame.K_q, 0) + clavier.get(pygame.K_d, 0) * -1, 0
@@ -191,12 +214,13 @@ def gere_side_view_movement():
 
 def update_projectiles():
     """Gère les mouvements et la suppression des projectiles."""
+    global mouvement
     for projectile in projectiles[:]:
         if top_view:
             projectile.position += projectile.direction * 20
         else:
             projectile.speed_y += gravity
-            projectile.position.x += projectile.direction.x * 20
+            projectile.position.x += projectile.direction.x * 20 
             projectile.position.y += projectile.direction.y * 20 + projectile.speed_y
 
         if map.est_dans_matrice(projectile.get_centre()) :

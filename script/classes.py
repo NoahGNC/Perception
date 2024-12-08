@@ -111,7 +111,7 @@ class Map :
         cosmetic = []
         for i in range(len(matrice)) :
             for j in range(len(matrice[i])) :
-                if matrice[i][j] >= 4:
+                if matrice[i][j] >= 5:
                     
                     tab.append(Transform(sprite="sprites/" + sprite_set + "/" + str(matrice[i][j]) + ".png", position=Vector2(j*self.chunk_size, i*self.chunk_size), taille=Vector2(self.chunk_size, self.chunk_size)))
                     
@@ -218,7 +218,7 @@ class Map :
         garde = []
 
         for c in tab :
-            if self.matrices[self.actual_map][c[1]][c[0]] >= 4 :
+            if self.matrices[self.actual_map][c[1]][c[0]] >= 5 :
                 garde.append(c)
 
         return garde
@@ -228,7 +228,7 @@ class Map :
         x = pos_mat[0]
         y = pos_mat[1]
 
-        if self.matrices[self.actual_map][y][x] == 6 or self.matrices[self.actual_map][y][x] == 4 :
+        if self.matrices[self.actual_map][y][x] == 6  :
             return True
         return False
 
