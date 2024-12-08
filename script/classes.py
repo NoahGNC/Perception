@@ -127,6 +127,7 @@ class Map :
         for objet in data["leviers"] :
             levier = Transform(objet["sprite"], Vector2(objet["x"], objet["y"]) * self.chunk_size,
                                                         Vector2(objet["tx"], objet["ty"]) * self.chunk_size)
+            levier.map = objet["map_affect"]
             levier.actionnement = objet["affect"]
             levier.actif = False
             self.leviers[objet["map"]].append(levier)
@@ -228,7 +229,7 @@ class Map :
         x = pos_mat[0]
         y = pos_mat[1]
 
-        if self.matrices[self.actual_map][y][x] == 6  :
+        if self.matrices[self.actual_map][y][x] >= 6  :
             return True
         return False
 

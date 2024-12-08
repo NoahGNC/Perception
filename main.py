@@ -3,7 +3,8 @@ from script.classes import *
 
 def init():
     """Initialisation des variables globales et du processus principal Pygame."""
-    global clock, perso, screen, font, map, top_view, is_touching_grass, gravity, projectiles, w, h , last_click, anti_spam , game_over,game_over_im, background_image
+    global clock, perso, screen, font, map, top_view, is_touching_grass, gravity, projectiles, w, h , last_click
+    global anti_spam , game_over,game_over_im, background_image, canal_1, canal_2
     pygame.init()
 
     # Configuration initial
@@ -33,6 +34,23 @@ def init():
     projectiles = []
     last_click = 0
     anti_spam = 1000
+
+        # Musiques 
+
+    pygame.mixer.init()
+    canal_0 = pygame.mixer.Channel(0)
+    canal_1 = pygame.mixer.Channel(1)
+    canal_2 = pygame.mixer.Channel(2)
+
+    son_1 = pygame.mixer.Sound("sons/Arrangement Perception 3.wav")
+    son_2 = pygame.mixer.Sound("sons/Arrangement Perception 4.wav")
+
+    canal_1.play(son_1, loops=-1)
+    canal_2.play(son_2, loops=-1) 
+    canal_1.set_volume(1)
+    canal_2.set_volume(0)
+
+    process()
 
     process()
 
@@ -68,7 +86,7 @@ def process():
 
 def gere_keydown(key):
     """Gère les événements clavier."""
-    global top_view, is_touching_grass, map, perso, w, h
+    global top_view, is_touching_grass, map, perso, w, h, canal1, canal2
 
     if key == pygame.K_v:
         if top_view:
@@ -76,11 +94,15 @@ def gere_keydown(key):
             perso.centrer(Vector2(w / 2, h / 2))
             find_ground()
             top_view = False
+            canal_1.set_volume(0)
+            canal_2.set_volume(1)
         elif not top_view and is_touching_grass:
             map.change_map(0)
             is_touching_grass = False
             perso.centrer(Vector2(w / 2, h / 2))
             top_view = True
+            canal_1.set_volume(1)
+            canal_2.set_volume(0)
         elif game_over:
             init()
 
@@ -129,15 +151,18 @@ def update():
    
     screen.blit(background_image, (0, 0))   
     if map.est_dans_matrice(perso.get_centre()) :
+        global_mouv = Vector2(0, 0)
         if top_view:
-            gere_top_view_movement()
+            global_mouv = gere_top_view_movement()
         else:
-            gere_side_view_movement()
+            global_mouv = gere_side_view_movement()
 
+        map.bouge_tout(global_mouv)
+    
         map.draw(screen)
         perso.draw(screen)
 
-        update_projectiles()
+        update_projectiles(global_mouv)
 
     else :
         
@@ -160,6 +185,8 @@ def gere_top_view_movement():
         clavier.get(pygame.K_z, 0) + clavier.get(pygame.K_s, 0) * -1
     ).normalized() * 10
 
+    global_mouv = Vector2(0, 0)
+
     map.collision(perso.get_centre())
 
 
@@ -172,10 +199,12 @@ def gere_top_view_movement():
         collide[1] = actuel if actuel else collide[1]
 
     if not collide[0] :
-        map.bouge_tout(mouvement * Vector2(1, 0))
+        global_mouv.x = mouvement.x
 
     if not collide[1] :
-        map.bouge_tout(mouvement * Vector2(0, 1))
+        global_mouv.y = mouvement.y
+    
+    return global_mouv
 
 
 def gere_side_view_movement():
@@ -185,6 +214,8 @@ def gere_side_view_movement():
     mouvement = Vector2(
         clavier.get(pygame.K_q, 0) + clavier.get(pygame.K_d, 0) * -1, 0
     ) * 10
+
+    global_mouv = Vector2(0, 0)
 
 
     map.collision(perso.get_centre())
@@ -206,21 +237,22 @@ def gere_side_view_movement():
     is_touching_grass = collide[1]
     
     if not collide[0] :
-        map.bouge_tout(mouvement)
+        global_mouv.x = mouvement.x
 
     if not is_touching_grass :
          perso.position.y += perso.speed_y
 
+    return global_mouv
 
-def update_projectiles():
+def update_projectiles(mouv:Vector2):
     """Gère les mouvements et la suppression des projectiles."""
     global mouvement
     for projectile in projectiles[:]:
         if top_view:
-            projectile.position += projectile.direction * 20
+            projectile.position += projectile.direction * 12 + mouv
         else:
             projectile.speed_y += gravity
-            projectile.position.x += projectile.direction.x * 20 
+            projectile.position.x += projectile.direction.x * 20  + mouv.x
             projectile.position.y += projectile.direction.y * 20 + projectile.speed_y
 
         if map.est_dans_matrice(projectile.get_centre()) :
@@ -246,11 +278,9 @@ def update_projectiles():
                     levier.charge_nouveau_sprite("sprites/levier0.png")
                     levier.actif = False
                 
-                for i in range(len(map.collisions_optionels[map.actual_map])) :
-                    print(levier.actionnement)
-                    if i in levier.actionnement :
-                        col = map.collisions_optionels[map.actual_map][i]
-                        col.actif = not col.actif
+                for i in range(len(levier.actionnement)) :
+                    col = map.collisions_optionels[levier.map[i]][levier.actionnement[i]]
+                    col.actif = not col.actif
 
 
 
