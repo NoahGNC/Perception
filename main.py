@@ -5,6 +5,7 @@ def init():
     """Initialisation des variables globales et du processus principal Pygame."""
     global clock, perso, screen, font, map, top_view, is_touching_grass, gravity, projectiles, w, h , last_click
     global anti_spam , game_over,game_over_im, background_image, canal_1, canal_2, index_frame, index_perso, index_move , perso_sprite
+    global pause, tir, saut
     pygame.init()
 
     # Configuration initial
@@ -55,7 +56,12 @@ def init():
     canal_1.set_volume(1)
     canal_2.set_volume(0)
 
-    process()
+    pause = False
+
+    # Sons
+
+    tir = pygame.mixer.Sound("sons/tir.wav")
+    saut = pygame.mixer.Sound("sons/saut.wav")
 
     process()
 
@@ -91,7 +97,7 @@ def process():
 
 def gere_keydown(key):
     """Gère les événements clavier."""
-    global top_view, is_touching_grass, map, perso, w, h, canal1, canal2
+    global top_view, is_touching_grass, map, perso, w, h, canal_1, canal_2, pause, saut
     
 
 
@@ -118,6 +124,7 @@ def gere_keydown(key):
         if not top_view and is_touching_grass:
             perso.speed_y = -10
             is_touching_grass = False
+            saut.play()
 
     elif key == pygame.K_ESCAPE:
         pygame.quit()
@@ -127,10 +134,13 @@ def gere_keydown(key):
         perso.flip(True)
     elif key == pygame.K_d:
         perso.flip(False)
+    elif key == pygame.K_p :
+        pause = not pause
 
 
 def create_projectile():
     """Crée un projectile à partir de la position actuelle du personnage."""
+    global tir
     M_posX, M_posY = pygame.mouse.get_pos()
     M_pos = Vector2(M_posX, M_posY)
     MP_Vect = Vector2.crea_vect(perso.get_centre(), M_pos).normalized()
@@ -140,6 +150,7 @@ def create_projectile():
     proj.direction = MP_Vect
     proj.speed_y = 0
     projectiles.append(proj)
+    tir.play()
 
 
 def find_ground():
@@ -160,42 +171,45 @@ def find_ground():
 
 def update():
     """Met à jour l'état du jeu à chaque frame."""
-    global is_touching_grass, game_over,game_over_im , background_image, index_move , index_frame , perso_sprite , index_perso
-    index_move += 1
-   
-    if index_move > 15:
-        index_move = 0
-        index_frame += 1
-        if index_frame > 1:
-            index_frame = 0
-        perso.charge_nouveau_sprite(perso_sprite[index_perso][index_frame])    
-
+    global is_touching_grass, game_over,game_over_im , background_image, index_move , index_frame , perso_sprite , index_perso, pause
+    screen.blit(background_image, (0, 0))     
 
     
-
-    screen.blit(background_image, (0, 0))   
     if map.est_dans_matrice(perso.get_centre()) :
         global_mouv = Vector2(0, 0)
-        if top_view:
-            global_mouv = gere_top_view_movement()
-        else:
-            global_mouv = gere_side_view_movement()
-
-        if global_mouv == Vector2(0,0):
-            if index_perso == 1:
-                 perso.charge_nouveau_sprite(perso_sprite[0][index_frame])
-            index_perso = 0
-        else:
-            if index_perso == 0:
-                 perso.charge_nouveau_sprite(perso_sprite[1][index_frame])
-            
-            index_perso = 1
-        map.bouge_tout(global_mouv)
-    
         map.draw(screen)
         perso.draw(screen)
+        if not pause :
+            index_move += 1
+            if index_move > 15:
+                index_move = 0
+                index_frame += 1
+                if index_frame > 1:
+                    index_frame = 0
+                perso.charge_nouveau_sprite(perso_sprite[index_perso][index_frame])  
+            update_projectiles(global_mouv)
+            if top_view:
+                global_mouv = gere_top_view_movement()
+            else:
+                global_mouv = gere_side_view_movement()
 
-        update_projectiles(global_mouv)
+            if global_mouv == Vector2(0,0):
+                if index_perso == 1:
+                    perso.charge_nouveau_sprite(perso_sprite[0][index_frame])
+                index_perso = 0
+            else:
+                if index_perso == 0:
+                    perso.charge_nouveau_sprite(perso_sprite[1][index_frame])
+                
+                index_perso = 1
+            map.bouge_tout(global_mouv)
+        else :
+            posi_mat = font.render("Pause", 175, pygame.Color("orange"))
+            screen.blit(posi_mat, (w / 2, h / 2))
+        
+
+
+        
 
     else :
         
