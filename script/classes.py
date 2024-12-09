@@ -23,6 +23,9 @@ class Vector2 :
         self = normalize(Vector2.ZERO(), self)
         
         return self
+    def __eq__(self, value):
+        return self.x == value.x and self.y == value.y
+        
 
     def __add__(self, autre) :
         """Voici une surcharge d'addition, elle permet d'additionner à notre classe
@@ -241,7 +244,7 @@ class Map :
         for c in autour :
             x = c[0]*self.chunk_size+self.liste_col[self.actual_map][0].position.x
             y = c[1]*self.chunk_size+self.liste_col[self.actual_map][0].position.y
-            self.real_col.append(Transform("sprites/shrek.png", Vector2(x, y), Vector2(self.chunk_size, self.chunk_size)))
+            self.real_col.append(Transform(None, Vector2(x, y), Vector2(self.chunk_size, self.chunk_size)))
         for c in self.collisions_optionels[self.actual_map] :
             if c.actif :
                 self.real_col.append(c)
@@ -262,10 +265,13 @@ class Transform :
 
     def __init__(self, sprite:str="sprites/collision.png", position=Vector2(), taille=Vector2(), temps_apparition=None, direction=None) :
         self.position = position
+        self.flipped = False
         self.temps_apparition = temps_apparition  # Si on veut que l'objet disparaisse après un certains nombre de frame.
         self.direction = direction if direction is not None else Vector2(0, 0)
         if sprite != None :
             self.sprite = pygame.image.load(sprite).convert_alpha()  # On charge le sprite de l'objet dans la ram
+        else: 
+            self.sprite = None
 
         if taille.est_null() and sprite != None :  # Si on n'a pas spécifié de taille à l'objet, sa taille sera par défaut la taille de l'image.
             self.taille = Vector2(sprite.get_rect().size[0], sprite.get_rect().size[1])
@@ -285,18 +291,29 @@ class Transform :
         """Cette procédure nous a permis de stocker tous les objets à afficher dans une liste
         et d'appeler leur méthode draw grâce à un parcours par compréhension. Ainsi nous avons pu afficher de façon
         efficace tous les objets du jeu à afficher"""
-        if self.temps_apparition != None or self.sprite != None and self.temps_apparition != None :
-            if self.temps_apparition >= 0 :
+        if self.sprite != None:
+            if self.temps_apparition != None or self.sprite != None and self.temps_apparition != None :
+                if self.temps_apparition >= 0 :
+                    screen.blit(self.sprite, (self.position.x, self.position.y))
+                    self.temps_apparition -= 1
+            elif self.sprite != None:
                 screen.blit(self.sprite, (self.position.x, self.position.y))
-                self.temps_apparition -= 1
-        elif self.sprite != None:
-            screen.blit(self.sprite, (self.position.x, self.position.y))
+    
+    def flip(self, x:bool) :
+        if self.sprite != None :
+            if x != self.flipped :
+                self.flipped = x
+                self.sprite = pygame.transform.flip(self.sprite, True, False)
+
+
 
     def charge_nouveau_sprite(self, nouveau_sprite:str) :
         """Cette fonction sert simplement a remplacer le sprite de l'objet par un nouveau
         Prend en paramètre une string qui est le nom du fichier du nouveau sprite"""
         self.sprite = pygame.image.load(nouveau_sprite).convert_alpha()
         self.sprite = pygame.transform.scale(self.sprite, (self.taille.x, self.taille.y))
+        if self.flipped :
+            self.sprite = pygame.transform.flip(self.sprite, True, False)
 
     def get_centre(self) :
         """Le repère orthonormé étant en haut à gauche, on veut parfois récupérer le centre notamment pour le système de collision"""

@@ -4,7 +4,7 @@ from script.classes import *
 def init():
     """Initialisation des variables globales et du processus principal Pygame."""
     global clock, perso, screen, font, map, top_view, is_touching_grass, gravity, projectiles, w, h , last_click
-    global anti_spam , game_over,game_over_im, background_image, canal_1, canal_2
+    global anti_spam , game_over,game_over_im, background_image, canal_1, canal_2, index_frame, index_perso, index_move , perso_sprite
     pygame.init()
 
     # Configuration initial
@@ -21,11 +21,16 @@ def init():
     # Initialisation des objet principal
 
 
-    perso = Transform("sprites/perso.png", position=Vector2(w / 2, h / 2), taille=Vector2(64, 64))
+    index_perso = 0
+    index_frame = 0
+    index_move  = 0
+    perso_sprite = [["sprites/perso_idle_1.png","sprites/perso_idle_2.png"],["sprites/perso_course_1.png","sprites/perso_course_2.png"]]
+    perso = Transform("sprites/perso_idle_1.png", position=Vector2(w / 2, h / 2), taille=Vector2(64, 64))
     game_over_im =  Transform( "sprites/game_over.png" ,position=Vector2(0,0), taille=Vector2(1280,720) )
     perso.centrer(Vector2(w / 2, h / 2))
     map = Map("data/map0.json", 64, 4)
-
+    
+    
     # Variables de gravités et états
     gravity = 0.5
     perso.speed_y = 1
@@ -87,6 +92,8 @@ def process():
 def gere_keydown(key):
     """Gère les événements clavier."""
     global top_view, is_touching_grass, map, perso, w, h, canal1, canal2
+    
+
 
     if key == pygame.K_v:
         if top_view:
@@ -106,6 +113,7 @@ def gere_keydown(key):
         elif game_over:
             init()
 
+
     elif key == pygame.K_SPACE:
         if not top_view and is_touching_grass:
             perso.speed_y = -10
@@ -114,6 +122,11 @@ def gere_keydown(key):
     elif key == pygame.K_ESCAPE:
         pygame.quit()
         exit()
+
+    if key == pygame.K_q:
+        perso.flip(True)
+    elif key == pygame.K_d:
+        perso.flip(False)
 
 
 def create_projectile():
@@ -147,8 +160,19 @@ def find_ground():
 
 def update():
     """Met à jour l'état du jeu à chaque frame."""
-    global is_touching_grass, game_over,game_over_im , background_image
+    global is_touching_grass, game_over,game_over_im , background_image, index_move , index_frame , perso_sprite , index_perso
+    index_move += 1
    
+    if index_move > 15:
+        index_move = 0
+        index_frame += 1
+        if index_frame > 1:
+            index_frame = 0
+        perso.charge_nouveau_sprite(perso_sprite[index_perso][index_frame])    
+
+
+    
+
     screen.blit(background_image, (0, 0))   
     if map.est_dans_matrice(perso.get_centre()) :
         global_mouv = Vector2(0, 0)
@@ -157,6 +181,15 @@ def update():
         else:
             global_mouv = gere_side_view_movement()
 
+        if global_mouv == Vector2(0,0):
+            if index_perso == 1:
+                 perso.charge_nouveau_sprite(perso_sprite[0][index_frame])
+            index_perso = 0
+        else:
+            if index_perso == 0:
+                 perso.charge_nouveau_sprite(perso_sprite[1][index_frame])
+            
+            index_perso = 1
         map.bouge_tout(global_mouv)
     
         map.draw(screen)
