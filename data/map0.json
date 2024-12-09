@@ -132,7 +132,10 @@
         {"map":3, "actif":1, "sprite": "sprites/mur.png", "x":34, "y":4, "tx":1, "ty":1},
         {"map":3, "actif":1, "sprite": "sprites/mur.png", "x":34, "y":5, "tx":1, "ty":1},
         {"map":3, "actif":1, "sprite": "sprites/mur.png", "x":34, "y":6, "tx":1, "ty":1},
-        {"map":3, "actif":1, "sprite": "sprites/mur.png", "x":34, "y":7, "tx":1, "ty":1}
+        {"map":3, "actif":1, "sprite": "sprites/mur.png", "x":34, "y":7, "tx":1, "ty":1},
+
+        {"map":4, "actif":0, "sprite": "sprites/mur.png", "x":28, "y":8, "tx":1, "ty":1},
+        {"map":4, "actif":1, "sprite": "sprites/mur.png", "x":34, "y":8, "tx":1, "ty":1}
 
 
     ],
@@ -142,8 +145,11 @@
         {"map":3, "map_affect":[3, 3, 3, 3, 3, 3, 0, 0, 0, 0], "sprite":"sprites/levier0.png", "x":29, "y":7, "tx":1, "ty":1, "affect":[2,3,4,5,6,7,4,5,6,7]},
 
         {"map":0, "map_affect":[0], "sprite":"sprites/levier0.png", "x":51, "y":5, "tx":1, "ty":1, "affect":[0]},
-        {"map":2,"map_affect":[0], "sprite":"sprites/levier0.png", "x":57, "y":5, "tx":1, "ty":1, "affect":[1]}
-    ]
+        {"map":2,"map_affect":[0], "sprite":"sprites/levier0.png", "x":57, "y":5, "tx":1, "ty":1, "affect":[1]},
+        {"map":4,"map_affect":[4, 4], "sprite":"sprites/levier0.png", "x":25, "y":2, "tx":1, "ty":1, "affect":[0, 1]},
+
+        {"map":4,"map_affect":[-1], "sprite":"sprites/levier0.png", "x":56, "y":7, "tx":1, "ty":1, "affect":[]}
+      ]
 
     
 }

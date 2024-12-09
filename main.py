@@ -5,7 +5,7 @@ def init():
     """Initialisation des variables globales et du processus principal Pygame."""
     global clock, perso, screen, font, map, top_view, is_touching_grass, gravity, projectiles, w, h , last_click
     global anti_spam , game_over,game_over_im, background_image, canal_1, canal_2, index_frame, index_perso, index_move , perso_sprite
-    global pause, tir, saut
+    global pause, tir, saut, canal_0, son_0
     pygame.init()
 
     # Configuration initial
@@ -48,6 +48,7 @@ def init():
     canal_1 = pygame.mixer.Channel(1)
     canal_2 = pygame.mixer.Channel(2)
 
+    son_0 = pygame.mixer.Sound("sons/GameOver.wav")
     son_1 = pygame.mixer.Sound("sons/Arrangement Perception 3.wav")
     son_2 = pygame.mixer.Sound("sons/Arrangement Perception 4.wav")
 
@@ -97,7 +98,7 @@ def process():
 
 def gere_keydown(key):
     """Gère les événements clavier."""
-    global top_view, is_touching_grass, map, perso, w, h, canal_1, canal_2, pause, saut
+    global top_view, is_touching_grass, map, perso, w, h, canal_1, canal_2, pause, saut, canal_0
     
 
 
@@ -117,6 +118,7 @@ def gere_keydown(key):
             canal_1.set_volume(1)
             canal_2.set_volume(0)
         elif game_over:
+            canal_0.pause()
             init()
 
 
@@ -171,7 +173,7 @@ def find_ground():
 
 def update():
     """Met à jour l'état du jeu à chaque frame."""
-    global is_touching_grass, game_over,game_over_im , background_image, index_move , index_frame , perso_sprite , index_perso, pause
+    global is_touching_grass, game_over,game_over_im , background_image, index_move , index_frame , perso_sprite , index_perso, pause, canal_0, son_0
     screen.blit(background_image, (0, 0))     
 
     
@@ -187,11 +189,11 @@ def update():
                 if index_frame > 1:
                     index_frame = 0
                 perso.charge_nouveau_sprite(perso_sprite[index_perso][index_frame])  
-            update_projectiles(global_mouv)
             if top_view:
                 global_mouv = gere_top_view_movement()
             else:
                 global_mouv = gere_side_view_movement()
+            update_projectiles(global_mouv)
 
             if global_mouv == Vector2(0,0):
                 if index_perso == 1:
@@ -212,8 +214,10 @@ def update():
         
 
     else :
-        
-        game_over=True
+        gameover()
+
+    if game_over :
+
         game_over_im.draw(screen)
         
         
@@ -223,7 +227,14 @@ def update():
 
 
 
-
+def gameover() :
+    global game_over
+    if game_over == False :
+        canal_0.play(son_0, -1)
+        canal_1.set_volume(0)
+        canal_2.set_volume(0)
+    game_over=True
+    
 
 def gere_top_view_movement():
     """Gère les mouvements du personnage en vue du dessus."""
@@ -326,8 +337,11 @@ def update_projectiles(mouv:Vector2):
                     levier.actif = False
                 
                 for i in range(len(levier.actionnement)) :
-                    col = map.collisions_optionels[levier.map[i]][levier.actionnement[i]]
-                    col.actif = not col.actif
+                    if levier.map[i] == -1 :
+                        gameover()
+                    else :
+                        col = map.collisions_optionels[levier.map[i]][levier.actionnement[i]]
+                        col.actif = not col.actif
 
 
 
