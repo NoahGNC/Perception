@@ -27,7 +27,7 @@ Pour installer ce projet sur votre machine locale, suivez ces étapes :
 3. Run the main.py
 
 
-##Creadits
+## Credits
 
 CUNEO Noah ESAT Gabriel
       
