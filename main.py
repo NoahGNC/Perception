@@ -5,7 +5,7 @@ def init():
     """Initialisation des variables globales et du processus principal Pygame."""
     global clock, perso, screen, font, map, top_view, is_touching_grass, gravity, projectiles, w, h , last_click
     global anti_spam , game_over,game_over_im, background_image, canal_1, canal_2, index_frame, index_perso, index_move , perso_sprite
-    global pause, tir, saut, canal_0, son_0
+    global pause, tir, saut, canal_0, son_0, is_paused
     pygame.init()
 
     # Configuration initial
@@ -42,7 +42,7 @@ def init():
     anti_spam = 1000
 
         # Musiques 
-
+    is_paused = False
     pygame.mixer.init()
     canal_0 = pygame.mixer.Channel(0)
     canal_1 = pygame.mixer.Channel(1)
@@ -64,12 +64,15 @@ def init():
     tir = pygame.mixer.Sound("sons/tir.wav")
     saut = pygame.mixer.Sound("sons/saut.wav")
 
+    #PNJ 
+    
+
     process()
 
 
 def process():
     """Boucle principale du jeu."""
-    global clavier, clock, top_view, is_touching_grass, map, projectiles, w, h , last_click , anti_spam , game_over
+    global is_paused,clavier, clock, top_view, is_touching_grass, map, projectiles, w, h , last_click , anti_spam , game_over
     clavier = {}
     running = True
 
@@ -98,7 +101,7 @@ def process():
 
 def gere_keydown(key):
     """Gère les événements clavier."""
-    global top_view, is_touching_grass, map, perso, w, h, canal_1, canal_2, pause, saut, canal_0
+    global is_paused,top_view, is_touching_grass, map, perso, w, h, canal_1, canal_2, pause, saut, canal_0
     
 
 
@@ -138,7 +141,17 @@ def gere_keydown(key):
         perso.flip(False)
     elif key == pygame.K_p :
         pause = not pause
-
+    if key == pygame.K_y:
+        if not is_paused:
+        
+            canal_1.pause()
+            canal_2.pause()
+            is_paused = True
+            
+        else:
+            canal_1.unpause()
+            canal_2.unpause()
+            is_paused =False
 
 def create_projectile():
     """Crée un projectile à partir de la position actuelle du personnage."""
@@ -181,6 +194,13 @@ def update():
         global_mouv = Vector2(0, 0)
         map.draw(screen)
         perso.draw(screen)
+
+
+        for pnj in map.pnjs[map.actual_map]:
+            distance = Vector2.distance(perso.get_centre(), pnj.get_centre())
+            pnj.display_text = distance < 100
+
+
         if not pause :
             index_move += 1
             if index_move > 15:

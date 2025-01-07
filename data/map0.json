@@ -60,7 +60,7 @@
         [8, 6, 6, 6, 6, 6, 6, 6, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 6, 6, 6, 6, 6, 6, 6, 8],
         [8, 6, 6, 6, 6, 6, 6, 6, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 6, 6, 6, 6, 6, 6, 6, 8],
         [8, 6, 6, 6, 6, 6, 6, 6, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 6, 6, 6, 6, 6, 6, 6, 8],
-        [8, 6, 6, 6, 6, 6, 6, 6, 8, 7, 7, 7, 7, 7, 0, 0, 7, 7, 7, 7, 0, 0, 0, 0, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6, 6, 8, 6, 6, 6, 6, 6, 6, 6, 8],
+        [8, 6, 6, 6, 6, 6, 6, 6, 8, 7, 7, 7, 7, 7, 0, 0, 7, 7, 7, 7, 0, 0, 0, 0, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 6, 6, 6, 6, 6, 6, 6, 8],
         [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 0, 0, 6, 6, 6, 6, 0, 0, 0, 0, 6, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6],
         [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 0, 0, 6, 6, 6, 6, 0, 0, 0, 0, 6, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6],
         [6, 8, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 0, 0, 6, 6, 6, 6, 0, 0, 0, 0, 6, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6]
@@ -110,14 +110,49 @@
 
     ],
     "collisions":[
+        
+        {"map":0, "actif":1, "sprite": "sprites/mur.png", "x":49, "y":12, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/mur.png", "x":50, "y":12, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/mur.png", "x":51, "y":12, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/mur.png", "x":52, "y":12, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/mur.png", "x":53, "y":12, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/mur.png", "x":54, "y":12, "tx":1, "ty":1},
 
-        {"map":0, "actif":1, "sprite": "sprites/mur.png", "x":49, "y":12, "tx":6, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/mur.png", "x":49, "y":16, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/mur.png", "x":50, "y":16, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/mur.png", "x":51, "y":16, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/mur.png", "x":52, "y":16, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/mur.png", "x":53, "y":16, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/mur.png", "x":54, "y":16, "tx":1, "ty":1},
+        
+        
 
-        {"map":0, "actif":1, "sprite": "sprites/mur.png", "x":49, "y":16, "tx":6, "ty":1},
 
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":38, "y":24, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":38, "y":25, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":38, "y":26, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":38, "y":27, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":38, "y":28, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":38, "y":29, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":38, "y":30, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":38, "y":31, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":38, "y":32, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":38, "y":33, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":38, "y":34, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":38, "y":35, "tx":1, "ty":1},
 
-        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":38, "y":24, "tx":1, "ty":12},
-        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":41, "y":24, "tx":1, "ty":12},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":41, "y":24, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":41, "y":25, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":41, "y":26, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":41, "y":27, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":41, "y":28, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":41, "y":29, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":41, "y":30, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":41, "y":31, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":41, "y":32, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":41, "y":33, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":41, "y":34, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/top/5.png", "x":41, "y":35, "tx":1, "ty":1},
 
         {"map":0, "actif":1, "sprite": "sprites/mur.png", "x":34, "y":28, "tx":1, "ty":1},
         {"map":0, "actif":1, "sprite": "sprites/mur.png", "x":34, "y":29, "tx":1, "ty":1},
@@ -135,20 +170,30 @@
         {"map":3, "actif":1, "sprite": "sprites/mur.png", "x":34, "y":7, "tx":1, "ty":1},
 
         {"map":4, "actif":0, "sprite": "sprites/mur.png", "x":28, "y":8, "tx":1, "ty":1},
-        {"map":4, "actif":1, "sprite": "sprites/mur.png", "x":34, "y":8, "tx":1, "ty":1}
+        {"map":4, "actif":1, "sprite": "sprites/mur.png", "x":34, "y":8, "tx":1, "ty":1},
 
+        {"map":0, "actif":0, "sprite": "sprites/mur.png", "x":28, "y":41, "tx":1, "ty":1},
+        {"map":0, "actif":1, "sprite": "sprites/mur.png", "x":34, "y":41, "tx":1, "ty":1},
+        
+        
+        {"map":0, "actif":0, "sprite": "sprites/fin.png", "x":0, "y":0, "tx":200, "ty":1},
+        {"map":4, "actif":0, "sprite": "sprites/fin.png", "x":0, "y":0, "tx":200, "ty":1}
 
     ],
 
     "leviers":[
-        {"map":3, "map_affect":[3, 3, 0, 0], "sprite":"sprites/levier0.png", "x":42, "y":2, "tx":1, "ty":1, "affect":[0, 1, 2, 3]},
-        {"map":3, "map_affect":[3, 3, 3, 3, 3, 3, 0, 0, 0, 0], "sprite":"sprites/levier0.png", "x":29, "y":7, "tx":1, "ty":1, "affect":[2,3,4,5,6,7,4,5,6,7]},
+        {"map":3, "map_affect":[3, 3, 0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], "sprite":"sprites/levier0.png", "x":42, "y":2, "tx":1, "ty":1, "affect":[0, 1, 12, 13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35]},
+        {"map":3, "map_affect":[3, 3, 3, 3, 3, 3, 0, 0, 0, 0], "sprite":"sprites/levier0.png", "x":29, "y":7, "tx":1, "ty":1, "affect":[2,3,4,5,6,7,36,37,38,39]},
+        {"map":0, "map_affect":[3, 3, 3, 3, 3, 3, 0, 0, 0, 0], "sprite":"sprites/levier0.png", "x":29, "y":30, "tx":1, "ty":1, "affect":[2,3,4,5,6,7,36,37,38,39]},
 
-        {"map":0, "map_affect":[0], "sprite":"sprites/levier0.png", "x":51, "y":5, "tx":1, "ty":1, "affect":[0]},
-        {"map":2,"map_affect":[0], "sprite":"sprites/levier0.png", "x":57, "y":5, "tx":1, "ty":1, "affect":[1]},
-        {"map":4,"map_affect":[4, 4], "sprite":"sprites/levier0.png", "x":25, "y":2, "tx":1, "ty":1, "affect":[0, 1]},
 
-        {"map":4,"map_affect":[-1], "sprite":"sprites/levier0.png", "x":56, "y":7, "tx":1, "ty":1, "affect":[]}
+        {"map":0, "map_affect":[0,0,0,0,0,0], "sprite":"sprites/levier0.png", "x":51, "y":5, "tx":1, "ty":1, "affect":[0,1,2,3,4,5]},
+        {"map":2,"map_affect":[0,0,0,0,0,0], "sprite":"sprites/levier0.png", "x":57, "y":5, "tx":1, "ty":1, "affect":[6,7,8,9,10,11]},
+        
+        {"map":4,"map_affect":[4, 4,0,0], "sprite":"sprites/levier0.png", "x":25, "y":2, "tx":1, "ty":1, "affect":[0, 1,40,41]},
+        
+
+        {"map":4,"map_affect":[4,0], "sprite":"sprites/levier0.png", "x":56, "y":7, "tx":1, "ty":1, "affect":[2,42]}
       ]
 
     

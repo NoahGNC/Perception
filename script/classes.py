@@ -87,7 +87,7 @@ class Map :
         self.liste_col = [] # Liste de liste de collision dont l'index correlle avec self.matrices
         self.real_col = [] # Juste les collisions autours du perso
         self.actual_map = 0 # Index de la map actuel, 0 étant celle vu du haut
-        
+        self.pnjs = []
         self.leviers = []
         self.collisions_optionels = []
 
@@ -105,7 +105,7 @@ class Map :
             
             self.add_leviers(data)
             self.add_collisions_optionels(data)
-    
+            self.add_pnjs()
             #self.liste_interactable = []
             #self.liste_monstres = []
 
@@ -175,6 +175,8 @@ class Map :
         for obj in self.collisions_optionels[self.actual_map] :
             if obj.actif :
                 obj.draw(screen)
+        for pnj in self.pnjs[self.actual_map]:
+            pnj.draw(screen)
 
     def bouge_tout(self, vecteur:Vector2) :
         for col in self.liste_col[self.actual_map] :
@@ -185,6 +187,8 @@ class Map :
             obj.position += vecteur
         for obj in self.collisions_optionels[self.actual_map] :
             obj.position += vecteur
+        for pnj in self.pnjs[self.actual_map]:
+            pnj.position += vecteur
 
     
     def pos_theorique(self,pos):
@@ -257,7 +261,30 @@ class Map :
         #    if TYPE == SPRITE :
          #       liste = Transform(dic["sprite"], Vector2(dic["posx"], dic["posy"]), Vector2(dic["taillex"], dic["tailley"]))
 
-
+    def add_pnjs(self):
+            # PNJ pour la map vue du dessus (map 0)
+            pnj_top = PNJ(
+                "sprites/pnj.png",
+                Vector2(14 * self.chunk_size, 5 * self.chunk_size),
+                Vector2(64, 64),
+                "Bonjour, n'oublie pas d'ou->V<-rir ton esprit"
+            )   
+            
+            # PNJ pour la première map de côté (map 1)
+            pnj_side = PNJ(
+                "sprites/pnj.png",
+                Vector2(14 * self.chunk_size, 7 * self.chunk_size),
+                Vector2(64, 64),
+                "Bien de plus je vois que tu as ton lance pierre de la marque clic gauche"
+            )
+            
+            self.pnjs = [
+                [pnj_top],  # Map 0
+                [pnj_side], # Map 1
+                [],         # Map 2
+                [],         # Map 3
+                []          # Map 4
+            ]
 
 class Transform :
     """La classe transform est une classe permettant d'initialiser un objet
@@ -298,6 +325,7 @@ class Transform :
                     self.temps_apparition -= 1
             elif self.sprite != None:
                 screen.blit(self.sprite, (self.position.x, self.position.y))
+
     
     def flip(self, x:bool) :
         if self.sprite != None :
@@ -379,3 +407,25 @@ def normalize(pos0, pos1) :
     """Retourne le veteur normalistée avec x et y compris entre -1 et 1"""
     return Vector2(pos1.x - pos0.x, pos1.y - pos0.y) / Vector2.distance(pos0, pos1)
 
+class PNJ(Transform):
+    def __init__(self, sprite: str, position=Vector2(), taille=Vector2(), texte=""):
+        super().__init__(sprite, position, taille)
+        self.texte = texte
+        self.display_text = False
+        self.font = pygame.font.SysFont("Arial", 16)
+        
+    def draw(self, screen):
+        super().draw(screen)
+        if self.display_text:
+            
+            text_surface = self.font.render(self.texte, True, (255, 255, 255))
+            text_rect = text_surface.get_rect(topleft=(self.position.x, self.position.y - 30))
+            
+           
+            s = pygame.Surface((text_rect.width + 10, text_rect.height + 10))
+            s.set_alpha(128)
+            s.fill((0, 0, 0))
+            screen.blit(s, (text_rect.x - 5, text_rect.y - 5))
+            
+            # Texte
+            screen.blit(text_surface, text_rect)
