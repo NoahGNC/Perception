@@ -1,4 +1,4 @@
- ### Perception
+ # Perception
 
 This is a platformer game where you have to change view between side mode and top mode to reach the end of the level
 
